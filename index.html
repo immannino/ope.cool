@@ -48,12 +48,8 @@
                                 const res = await fetch("/api/index")
                                 const newItem = await res.json();
 
-                                if (item === null) {
+                                if (item === null || item["Checksum"] !== newItem["Checksum"]) {
                                         item = newItem;
-                                        appendItem()
-                                }
-
-                                if (item["Checksum"] !== newItem["Checksum"]) {
                                         appendItem()
                                 }
                         } catch (err) {
