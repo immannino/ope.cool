@@ -35,10 +35,11 @@
 </head>
 <body>
         <main>
-                <h1><code>api.ope.cool</code></h1>
+                <h1>api.ope.cool</h1>
                 <h3>Latest Spotify listen history:</h3>
                 <div class="listens" id="listens"></div>
         </main>
+        <footer>Made by <a href="https://www.spaghet.me">tones</a></footer>
         <script>
                 const listens = document.querySelector("#listens")
                 let item = null;
@@ -58,12 +59,19 @@
                                 console.log(err)
                         }
                 }
-                
+
                 function appendItem() {
                         const div = document.createElement('div');
-                        div.innerHTML = item["Content"]
-                        listens.appendChild(div)
+                        const element = `
+                        <div class="item">
+                                <div class="content">${item["Content"]}</div>
+                                <div class="timestamp">Listened at: ${new Date(item["Timestamp"]).toLocaleString()}</div>
+                        </div>`;
+                        div.innerHTML = element
+                        listens.prepend(div);
                 }
+
+                fetchItem();
         </script>
     <style>
     :root {
@@ -85,16 +93,34 @@
     body {
         background-color: white;
         color: var(--green, black);
-        font-family: monospace; 
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 100vh;
     }
 
-    h1 { font-size: 3rem; }
-    h2 { font-size: 2.2rem; }
+    h1 { font-size: 3rem; text-align: center; }
+    h2 { font-size: 2.2rem; text-align: center; }
     h3 { font-size: 1.5rem; }
 
     main {
         max-width: 450px;
         margin: 0 auto;
+        padding: 0.25rem;
+    }
+
+    .timestamp {
+        color: #505050;
+        font-size: 12px;
+    }
+
+    footer {
+        margin-top: auto;
+        background-color: var(--green);
+        color: var(--lime);
+        font-weight: bolder;
+        padding: 0.25rem;
     }
     </style>
 </body>
