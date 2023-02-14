@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -45,8 +45,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	defer res.Body.Close()
 
-	var listen *CurrentListen
-	err = json.NewDecoder(r.Body).Decode(&listen)
+	logger.Printf("--- res status: %d", res.StatusCode)
+
+	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		logger.Printf("---- error unmarshalling body, %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -54,5 +55,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(listen)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(b)
 }
