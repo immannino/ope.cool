@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -25,7 +26,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	logger := log.Default()
 
 	logger.Println("---- Starting fetch")
-	req, err := http.NewRequest(http.MethodGet, API_BASE_URI, nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", API_BASE_URI, API_JSON_KEY), nil)
 	if err != nil {
 		logger.Printf("---- error creating request, %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
