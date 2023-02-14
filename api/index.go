@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -21,8 +22,12 @@ type CurrentListen struct {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+	logger := log.Default()
+
+	logger.Println("---- Starting fetch")
 	req, err := http.NewRequest(http.MethodGet, API_BASE_URI, nil)
 	if err != nil {
+		logger.Printf("---- error creating request, %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -32,6 +37,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
+		logger.Printf("---- error making request to api, %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -41,6 +47,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	var listen *CurrentListen
 	err = json.NewDecoder(r.Body).Decode(&listen)
 	if err != nil {
+		logger.Printf("---- error unmarshalling body, %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
