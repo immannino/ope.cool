@@ -61,7 +61,7 @@
                 }, 1000 * 5)
 
                 function appendItem() {
-                        const div = new HTMLDivElement();
+                        const div = document.createElement('div');
                         div.innerHTML = item["Content"]
                         listens.appendChild(div)
                 }
