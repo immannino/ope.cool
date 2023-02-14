@@ -51,7 +51,12 @@
                                 const res = await fetch('/api/fetch')
                                 const newItem = await res.json();
 
-                                if (cacheItem === null || cacheItem["Checksum"] !== newItem["Checksum"]) {
+                                if (cacheItem === null) {
+                                        cacheItem = newItem;
+                                        return
+                                }
+
+                                if (cacheItem["Checksum"] !== newItem["Checksum"]) {
                                         cacheItem = newItem;
                                         appendItem(cacheItem, true)
                                 }
