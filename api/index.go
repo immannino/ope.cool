@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	API_BASE_URI = os.Getenv("API_URI")
+	API_BASE_URI = os.Getenv("API_BASE_URI")
 	API_KEY      = os.Getenv("API_KEY")
 	API_JSON_KEY = "song.json"
 	API_HTML_KEY = "index.html"
