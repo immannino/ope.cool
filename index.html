@@ -43,7 +43,9 @@
                 const listens = document.querySelector("#listens")
                 let item = null;
 
-                setInterval(async () => {
+                setInterval(fetchItem, 1000 * 5)
+
+                async function fetchItem() {
                         try {
                                 const res = await fetch("/api/index")
                                 const newItem = await res.json();
@@ -55,8 +57,8 @@
                         } catch (err) {
                                 console.log(err)
                         }
-                }, 1000 * 5)
-
+                }
+                
                 function appendItem() {
                         const div = document.createElement('div');
                         div.innerHTML = item["Content"]
@@ -83,13 +85,13 @@
     body {
         background-color: white;
         color: var(--green, black);
-        font-family: sans-serif;
+        font-family: monospace; 
     }
 
-    h1 { font-size: 4rem; }
-    h2 { font-size: 3rem; }
-    h3 { font-size: 2rem; }
-    
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2.2rem; }
+    h3 { font-size: 1.5rem; }
+
     main {
         max-width: 450px;
         margin: 0 auto;
