@@ -44,7 +44,7 @@
 
                 setInterval(async () => {
                         try {
-                                const res = await fetch("/")
+                                const res = await fetch("/api/index")
                                 const newItem = await res.json();
 
                                 if (item === null) {
