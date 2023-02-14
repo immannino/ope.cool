@@ -10,10 +10,13 @@ import (
 )
 
 var (
-	API_BASE_URI = os.Getenv("API_BASE_URI")
-	API_KEY      = os.Getenv("API_KEY")
-	API_JSON_KEY = "song.json"
-	API_HTML_KEY = "index.html"
+	API_BASE_URI  = os.Getenv("API_BASE_URI")
+	API_KEY       = os.Getenv("API_KEY")
+	API_SONG_KEY  = "song.json"
+	API_SONGS_KEY = "songs.json"
+	API_HTML_KEY  = "index.html"
+
+	logger = log.Default()
 )
 
 type CurrentListen struct {
@@ -23,14 +26,28 @@ type CurrentListen struct {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	logger := log.Default()
+	path := fmt.Sprintf("%s/%s", API_BASE_URI, API_SONG_KEY)
 
+	if r.URL.Query().Get("many") != "" {
+		path = fmt.Sprintf("%s/%s", API_BASE_URI, API_SONGS_KEY)
+	}
+
+	b, err := fetch(path)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(b)
+}
+
+func fetch(path string) ([]byte, error) {
 	logger.Println("---- Starting fetch")
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", API_BASE_URI, API_JSON_KEY), nil)
+	req, err := http.NewRequest(http.MethodGet, path, nil)
 	if err != nil {
 		logger.Printf("---- error creating request, %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	req.Header.Set("X-Api-Key", API_KEY)
@@ -39,8 +56,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		logger.Printf("---- error making request to api, %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -50,11 +66,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		logger.Printf("---- error unmarshalling body, %v", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, err
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Add("Content-Type", "application/json")
-	w.Write(b)
+	return b, nil
 }

@@ -46,9 +46,12 @@
 
                 setInterval(fetchItem, 1000 * 5)
 
+                function fetchSingleItem() {
+                        fetchItem("/api/fetch")
+                }
                 async function fetchItem() {
                         try {
-                                const res = await fetch("/api/index")
+                                const res = await fetch('/api/index')
                                 const newItem = await res.json();
 
                                 if (item === null || item["Checksum"] !== newItem["Checksum"]) {
@@ -60,7 +63,22 @@
                         }
                 }
 
-                function appendItem() {
+                async function fetchItems() {
+                        try {
+                                const res = await fetch('/api/index?many=true')
+                                const items = await res.json();
+
+                                if (items.length) {
+                                        for (let item of items) {
+                                                appendItem(item);
+                                        }
+                                }
+                        } catch (err) {
+                                console.log(err)
+                        }
+                }
+
+                function appendItem(inFront) {
                         const div = document.createElement('div');
                         const element = `
                         <div class="item">
@@ -68,10 +86,15 @@
                                 <div class="timestamp">Listened at: ${new Date(item["Timestamp"]).toLocaleString()}</div>
                         </div>`;
                         div.innerHTML = element
-                        listens.prepend(div);
+
+                        if (inFront) {
+                                listens.prepend(div);
+                        } else {
+                                listens.appendChild(div)
+                        }
                 }
 
-                fetchItem();
+                fetchItems();
         </script>
     <style>
     :root {
