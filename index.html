@@ -35,7 +35,7 @@
 </head>
 <body>
         <main>
-                <h1><code>api</code>.ope.cool</h1>
+                <h1><code>api.ope.cool</code></h1>
                 <h3>Latest Spotify listen history:</h3>
                 <div class="listens" id="listens"></div>
         </main>
@@ -81,12 +81,17 @@
     
     html, body { padding: 0; margin: 0; }
     body {
-        background-color: var(--light);
+        background-color: white;
         color: var(--green, black);
         font-family: sans-serif;
     }
+
+    h1 { font-size: 4rem; }
+    h2 { font-size: 3rem; }
+    h3 { font-size: 2rem; }
+    
     main {
-        min-width: 300px;
+        max-width: 450px;
         margin: 0 auto;
     }
     </style>
