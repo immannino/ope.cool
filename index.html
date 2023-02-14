@@ -42,21 +42,18 @@
         <footer>Made by <a href="https://www.spaghet.me">tones</a></footer>
         <script>
                 const listens = document.querySelector("#listens")
-                let item = null;
+                let cacheItem = null;
 
                 setInterval(fetchItem, 1000 * 5)
 
-                function fetchSingleItem() {
-                        fetchItem("/api/fetch")
-                }
                 async function fetchItem() {
                         try {
                                 const res = await fetch('/api/fetch')
                                 const newItem = await res.json();
 
-                                if (item === null || item["Checksum"] !== newItem["Checksum"]) {
-                                        item = newItem;
-                                        appendItem()
+                                if (cacheItem === null || cacheItem["Checksum"] !== newItem["Checksum"]) {
+                                        cacheItem = newItem;
+                                        appendItem(cacheItem, true)
                                 }
                         } catch (err) {
                                 console.log(err)
@@ -70,7 +67,7 @@
 
                                 if (items.length) {
                                         for (let item of items) {
-                                                appendItem(item);
+                                                appendItem(item, false);
                                         }
                                 }
                         } catch (err) {
@@ -78,7 +75,7 @@
                         }
                 }
 
-                function appendItem(inFront) {
+                function appendItem(item, prependItem) {
                         const div = document.createElement('div');
                         const element = `
                         <div class="item">
@@ -87,7 +84,7 @@
                         </div>`;
                         div.innerHTML = element
 
-                        if (inFront) {
+                        if (prependItem) {
                                 listens.prepend(div);
                         } else {
                                 listens.appendChild(div)
