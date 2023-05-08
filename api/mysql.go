@@ -18,12 +18,14 @@ var (
 
 func init() {
 	// setup DB stuff
+	log.Println("connecting to DB")
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_CONN"))
 	if err != nil {
 		fmt.Println("Error connecting to DB", err)
 		panic(err)
 	}
 
+	log.Println("connecting to Querier")
 	querier = orm.New(db)
 }
 
