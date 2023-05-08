@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Site Behavior tags -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Basic site info-->
+    <meta name="title" data-hid="title" content="ope ~ cool">
+    <meta name="description" data-hid="description" content="what's tony currently listening to on spotify?">
+
+    <!-- Open Graph (Facebook/Linkedin) tags -->
+    <!-- Testing tool: https://developers.facebook.com/tools/debug/ -->
+    <meta property="og:site_name" content="ope.cool">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://www.ope.cool">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ope ~ cool">
+    <meta property="og:description" content="what's tony currently listening to on spotify?">
+    <meta property="og:image" content="https://hips.hearstapps.com/hmg-prod/images/the-inside-x-cw-stockwell-lifestyle-1623078507.jpeg">
+
+    <!-- Twitter tags -->
+    <!-- Testing tool: https://cards-dev.twitter.com/validator -->
+    <meta name="twitter:site" content="https://www.ope.cool">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ope ~ cool">
+    <meta name="twitter:description" content="what's tony currently listening to on spotify?">
+    <meta name="twitter:image" content="https://hips.hearstapps.com/hmg-prod/images/the-inside-x-cw-stockwell-lifestyle-1623078507.jpeg">
+    <meta name="twitter:image:alt" content="floral">
+    <title>ope ~ cool</title>
+    
+    <!-- Inline SVG Emoji Icon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2260%22>𓂺</text></svg>">
+</head>
+<body>
+        <main>
+                <h1>api.ope.cool</h1>
+                <h3>Latest Spotify listen history:</h3>
+                <div class="listens" id="listens"></div>
+        </main>
+        <footer>Made by <a href="https://www.spaghet.me">tones</a></footer>
+        <script>
+                const listens = document.querySelector("#listens")
+                let cacheItem = null;
+
+                setInterval(fetchItem, 1000 * 5)
+
+                async function fetchItem() {
+                        try {
+                                const res = await fetch('/api/mysql')
+                                const newItem = await res.json();
+
+                                if (cacheItem === null) {
+                                        cacheItem = newItem;
+                                        return
+                                }
+
+                                if (cacheItem["listen_id"] !== newItem["listen_id"]) {
+                                        cacheItem = newItem;
+                                        appendItem(cacheItem, true)
+                                }
+                        } catch (err) {
+                                console.log(err)
+                        }
+                }
+
+                async function fetchItems() {
+                        try {
+                                const res = await fetch('/api/fetch?many=true')
+                                const items = await res.json();
+
+                                if (items.length) {
+                                        for (let item of items) {
+                                                appendItem(item, false);
+                                        }
+                                }
+                        } catch (err) {
+                                console.log(err)
+                        }
+                }
+
+                function appendItem(item, prependItem) {
+                        const div = document.createElement('div');
+                        const element = `
+                        <div class="item">
+                                <div class="content">${item["Content"]}</div>
+                                <div class="timestamp">Listened at: ${new Date(item["Timestamp"]).toLocaleString()}</div>
+                        </div>`;
+                        div.innerHTML = element
+
+                        if (prependItem) {
+                                listens.prepend(div);
+                        } else {
+                                listens.appendChild(div)
+                        }
+                }
+
+                fetchItems();
+        </script>
+    <style>
+    :root {
+        --light: #EEF2E3;
+        --lime: #C8F169;
+        --green: #2A6F2B;
+    }
+    
+    * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        box-sizing: border-box;
+        scroll-behavior: smooth;
+        font-size: 16px;
+    }
+    
+    html, body { padding: 0; margin: 0; }
+    body {
+        background-color: white;
+        color: var(--green, black);
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 100vh;
+    }
+
+    h1 { font-size: 3rem; text-align: center; }
+    h2 { font-size: 2.2rem; text-align: center; }
+    h3 { font-size: 1.5rem; }
+
+    main {
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 0.25rem;
+    }
+
+    .timestamp {
+        color: #505050;
+        font-size: 12px;
+    }
+
+    footer {
+        margin-top: auto;
+        background-color: var(--green);
+        color: var(--lime);
+        font-weight: bolder;
+        padding: 0.25rem;
+    }
+
+        @media (prefers-color-scheme: dark) {
+                body {
+                        background-color: #050505;
+                        color: var(--lime);       
+                }
+
+                .listens {
+                        color: white!important;
+                }
+        }
+
+    </style>
+</body>
+</html>

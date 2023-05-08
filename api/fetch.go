@@ -25,7 +25,7 @@ type CurrentListen struct {
 	Checksum  string    `json:"Checksum"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func Fetch(w http.ResponseWriter, r *http.Request) {
 	path := fmt.Sprintf("%s/%s", API_BASE_URI, API_SONG_KEY)
 
 	if r.URL.Query().Get("many") != "" {
