@@ -67,7 +67,7 @@
 
                 async function fetchItems() {
                         try {
-                                const res = await fetch('/api/fetch?many=true')
+                                const res = await fetch('/api/mysql?many=true')
                                 const items = await res.json();
 
                                 if (items.length) {
