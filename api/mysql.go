@@ -3,6 +3,8 @@ package handler
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -18,6 +20,7 @@ func init() {
 	// setup DB stuff
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_CONN"))
 	if err != nil {
+		fmt.Println("Error connecting to DB", err)
 		panic(err)
 	}
 
@@ -29,6 +32,7 @@ func Mysql(w http.ResponseWriter, r *http.Request) {
 	var songs []orm.Listen
 
 	if r.URL.Query().Get("many") != "" {
+		log.Println("Fetching many")
 		resp, err := querier.GetLastNListens(ctx, 10)
 		if err != nil {
 			respondError(w, err)
@@ -36,6 +40,7 @@ func Mysql(w http.ResponseWriter, r *http.Request) {
 		}
 		songs = resp
 	} else {
+		log.Println("Fetching single")
 		resp, err := querier.GetLatestListen(ctx)
 		if err != nil {
 			respondError(w, err)
