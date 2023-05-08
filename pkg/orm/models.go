@@ -32,5 +32,6 @@ type Listen struct {
 	AlbumImage       sql.NullString `json:"album_image"`
 	AlbumImageHeight sql.NullInt32  `json:"album_image_height"`
 	AlbumImageWidth  sql.NullInt32  `json:"album_image_width"`
+	JsonDump         sql.NullString `json:"json_dump"`
 	ListenedAt       sql.NullTime   `json:"listened_at"`
 }

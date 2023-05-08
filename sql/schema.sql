@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS listen (
         album_image VARCHAR(255),
         album_image_height INTEGER,
         album_image_width INTEGER,
+        json_dump VARCHAR(255),
         listened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
