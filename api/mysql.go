@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/immannino/ope.cool/pkg/orm"
 )
 
@@ -16,28 +17,20 @@ var (
 	querier *orm.Queries
 )
 
-// func init() {
-// 	// setup DB stuff
-// 	log.Println("connecting to DB")
-// 	db, err := sql.Open("mysql", os.Getenv("DATABASE_CONN"))
-// 	if err != nil {
-// 		fmt.Println("Error connecting to DB", err)
-// 		panic(err)
-// 	}
-
-// 	log.Println("connecting to Querier")
-// 	querier = orm.New(db)
-// }
-
-func Mysql(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", os.Getenv("DATABASE_CONN"))
+func init() {
+	// setup DB stuff
+	log.Println("connecting to DB")
+	db, err := sql.Open("mysql", os.Getenv("DATABASE_URI"))
 	if err != nil {
 		fmt.Println("Error connecting to DB", err)
-		respondError(w, err)
+		panic(err)
 	}
 
 	log.Println("connecting to Querier")
 	querier = orm.New(db)
+}
+
+func Mysql(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var songs []orm.Listen
 
