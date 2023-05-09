@@ -10,7 +10,7 @@ import (
 )
 
 const getLastNListens = `-- name: GetLastNListens :many
-SELECT listen_id, feed_slug, spotify_song_id, spotify_href, spotify_uri, artist, artist_genres, track_name, album_name, album_image, album_image_height, album_image_width, json_dump, listened_at FROM listen ORDER BY listen_id DESC LIMIT ?
+SELECT listen_id, spotify_song_id, spotify_href, spotify_uri, artist, artist_genres, track_name, album_name, album_image, album_image_height, album_image_width, html, listened_at FROM listen ORDER BY listen_id DESC LIMIT ?
 `
 
 func (q *Queries) GetLastNListens(ctx context.Context, limit int32) ([]Listen, error) {
@@ -24,7 +24,6 @@ func (q *Queries) GetLastNListens(ctx context.Context, limit int32) ([]Listen, e
 		var i Listen
 		if err := rows.Scan(
 			&i.ListenID,
-			&i.FeedSlug,
 			&i.SpotifySongID,
 			&i.SpotifyHref,
 			&i.SpotifyUri,
@@ -35,7 +34,7 @@ func (q *Queries) GetLastNListens(ctx context.Context, limit int32) ([]Listen, e
 			&i.AlbumImage,
 			&i.AlbumImageHeight,
 			&i.AlbumImageWidth,
-			&i.JsonDump,
+			&i.Html,
 			&i.ListenedAt,
 		); err != nil {
 			return nil, err
@@ -52,7 +51,7 @@ func (q *Queries) GetLastNListens(ctx context.Context, limit int32) ([]Listen, e
 }
 
 const getLatestListen = `-- name: GetLatestListen :one
-SELECT listen_id, feed_slug, spotify_song_id, spotify_href, spotify_uri, artist, artist_genres, track_name, album_name, album_image, album_image_height, album_image_width, json_dump, listened_at FROM listen ORDER BY listen_id DESC LIMIT 1
+SELECT listen_id, spotify_song_id, spotify_href, spotify_uri, artist, artist_genres, track_name, album_name, album_image, album_image_height, album_image_width, html, listened_at FROM listen ORDER BY listen_id DESC LIMIT 1
 `
 
 func (q *Queries) GetLatestListen(ctx context.Context) (Listen, error) {
@@ -60,7 +59,6 @@ func (q *Queries) GetLatestListen(ctx context.Context) (Listen, error) {
 	var i Listen
 	err := row.Scan(
 		&i.ListenID,
-		&i.FeedSlug,
 		&i.SpotifySongID,
 		&i.SpotifyHref,
 		&i.SpotifyUri,
@@ -71,7 +69,7 @@ func (q *Queries) GetLatestListen(ctx context.Context) (Listen, error) {
 		&i.AlbumImage,
 		&i.AlbumImageHeight,
 		&i.AlbumImageWidth,
-		&i.JsonDump,
+		&i.Html,
 		&i.ListenedAt,
 	)
 	return i, err

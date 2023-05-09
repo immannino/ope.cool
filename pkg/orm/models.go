@@ -6,22 +6,10 @@ package orm
 
 import (
 	"database/sql"
-	"time"
 )
-
-type Jsonfeed struct {
-	Slug        string    `json:"slug"`
-	Url         string    `json:"url"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	ItemCount   int32     `json:"item_count"`
-	Createdat   time.Time `json:"createdat"`
-	Updatedat   time.Time `json:"updatedat"`
-}
 
 type Listen struct {
 	ListenID         int32          `json:"listen_id"`
-	FeedSlug         sql.NullString `json:"feed_slug"`
 	SpotifySongID    sql.NullString `json:"spotify_song_id"`
 	SpotifyHref      sql.NullString `json:"spotify_href"`
 	SpotifyUri       sql.NullString `json:"spotify_uri"`
@@ -32,6 +20,6 @@ type Listen struct {
 	AlbumImage       sql.NullString `json:"album_image"`
 	AlbumImageHeight sql.NullInt32  `json:"album_image_height"`
 	AlbumImageWidth  sql.NullInt32  `json:"album_image_width"`
-	JsonDump         sql.NullString `json:"json_dump"`
+	Html             sql.NullString `json:"html"`
 	ListenedAt       sql.NullTime   `json:"listened_at"`
 }
