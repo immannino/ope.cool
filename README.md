@@ -1,2 +1,3 @@
 # ope.cool
-> ope.cool is a random domain i bought for cool shit
+
+> A timeline of my Spotify listen history
