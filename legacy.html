@@ -32,6 +32,7 @@
     
     <!-- Inline SVG Emoji Icon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2260%22>𓂺</text></svg>">
+    <script data-goatcounter="https://opecool.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
         <main>
@@ -48,20 +49,16 @@
 
                 async function fetchItem() {
                         try {
-                                const res = await fetch('/api/mysql')
+                                const res = await fetch('/api/fetch')
                                 const newItem = await res.json();
 
-                                if (!newItem.length) {
-                                        return
-                                }
-
                                 if (cacheItem === null) {
-                                        cacheItem = newItem[0];
+                                        cacheItem = newItem;
                                         return
                                 }
 
-                                if (cacheItem["listen_id"] !== newItem[0]["listen_id"]) {
-                                        cacheItem = newItem[0];
+                                if (cacheItem["Checksum"] !== newItem["Checksum"]) {
+                                        cacheItem = newItem;
                                         appendItem(cacheItem, true)
                                 }
                         } catch (err) {
@@ -71,7 +68,7 @@
 
                 async function fetchItems() {
                         try {
-                                const res = await fetch('/api/mysql?many=true')
+                                const res = await fetch('/api/fetch?many=true')
                                 const items = await res.json();
 
                                 if (items.length) {
@@ -88,8 +85,8 @@
                         const div = document.createElement('div');
                         const element = `
                         <div class="item">
-                                <div class="content">${item["html"]["String"]}</div>
-                                <div class="timestamp">Listened at: ${new Date(item["listened_at"]["Time"]).toLocaleString()}</div>
+                                <div class="content">${item["Content"]}</div>
+                                <div class="timestamp">Listened at: ${new Date(item["Timestamp"]).toLocaleString()}</div>
                         </div>`;
                         div.innerHTML = element
 
