@@ -84,8 +84,8 @@
                         const div = document.createElement('div');
                         const element = `
                         <div class="item">
-                                <div class="content">${item["html"]}</div>
-                                <div class="timestamp">Listened at: ${new Date(item["listened_at"]).toLocaleString()}</div>
+                                <div class="content">${item["html"]["String"]}</div>
+                                <div class="timestamp">Listened at: ${new Date(item["listened_at"]["Time"]).toLocaleString()}</div>
                         </div>`;
                         div.innerHTML = element
 
