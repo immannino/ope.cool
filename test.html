@@ -51,12 +51,16 @@
                                 const res = await fetch('/api/mysql')
                                 const newItem = await res.json();
 
-                                if (cacheItem === null) {
-                                        cacheItem = newItem;
+                                if (!newItem.length) {
                                         return
                                 }
 
-                                if (cacheItem["listen_id"] !== newItem["listen_id"]) {
+                                if (cacheItem === null) {
+                                        cacheItem = newItem[0];
+                                        return
+                                }
+
+                                if (cacheItem["listen_id"] !== newItem[0]["listen_id"]) {
                                         cacheItem = newItem;
                                         appendItem(cacheItem, true)
                                 }
