@@ -61,7 +61,7 @@
                                 }
 
                                 if (cacheItem["listen_id"] !== newItem[0]["listen_id"]) {
-                                        cacheItem = newItem;
+                                        cacheItem = newItem[0];
                                         appendItem(cacheItem, true)
                                 }
                         } catch (err) {
