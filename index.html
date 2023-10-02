@@ -101,6 +101,23 @@
                 }
 
                 fetchItems();
+
+                function useEmbed() {
+                      const params = new URLSearchParams(window.location.search)
+            
+                      if (params.get('embed') != '') {
+                          ///
+                          /// --- Sending client height information for iframe context
+                          /// see: https://usefulangle.com/post/65/javascript-automatically-resize-iframe
+                          ///
+                          let message = { height: this.$refs.job.scrollHeight, width: this.$refs.job.scrollWidth };
+                          window.top.postMessage(message, "*");
+            
+                          document.querySelector('h1').style.display = 'none';
+                          document.querySelector('h3').style.display = 'none';
+                      } 
+                }
+                useEmbed();
         </script>
     <style>
     :root {
