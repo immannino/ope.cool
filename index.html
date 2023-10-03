@@ -35,7 +35,8 @@
 </head>
 <body>
         <main>
-                <h1>api.ope.cool</h1>
+                <h1>ope.cool</h1>
+                <p>What is <a href="https://open.spotify.com/user/1258188545" target="_blank">tony</a> listening to?</p>
                 <h3>Latest Spotify listen history:</h3>
                 <div class="listens" id="listens"></div>
         </main>
@@ -104,18 +105,20 @@
 
                 function useEmbed() {
                       const params = new URLSearchParams(window.location.search)
-            
-                      if (params.get('embed') != '') {
+                      
+                      if (params.get('embed')) {
                           ///
                           /// --- Sending client height information for iframe context
                           /// see: https://usefulangle.com/post/65/javascript-automatically-resize-iframe
                           ///
                           window.top.postMessage({ 
                               height: document.body.scrollHeight, 
-                              width: document.body.scrollWidth }, "*");
+                              width: document.body.scrollWidth
+                        }, "*");
             
                           document.querySelector('h1').style.display = 'none';
                           document.querySelector('h3').style.display = 'none';
+                          document.querySelector('footer').style.display = 'none';
                       } 
                 }
                 useEmbed();

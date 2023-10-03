@@ -42,6 +42,16 @@ func Mysql(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		songs = resp
+	} else if r.URL.Query().Get("top") != "" {
+		top, err := querier.GetTopNListens(ctx, 10)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(top)
+		return
 	} else {
 		log.Println("Fetching single")
 		resp, err := querier.GetLatestListen(ctx)

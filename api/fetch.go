@@ -25,6 +25,9 @@ type CurrentListen struct {
 	Checksum  string    `json:"Checksum"`
 }
 
+type FetchResponse struct {
+}
+
 func Fetch(w http.ResponseWriter, r *http.Request) {
 	path := fmt.Sprintf("%s/%s", API_BASE_URI, API_SONG_KEY)
 

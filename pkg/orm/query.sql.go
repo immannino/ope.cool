@@ -7,6 +7,7 @@ package orm
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getLastNListens = `-- name: GetLastNListens :many
@@ -84,4 +85,43 @@ func (q *Queries) GetListenCount(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getTopNListens = `-- name: GetTopNListens :many
+SELECT spotify_song_id, artist, track_name, COUNT(spotify_song_id) FROM listen GROUP BY spotify_song_id, artist, track_name ORDER BY COUNT(spotify_song_id) DESC LIMIT ?
+`
+
+type GetTopNListensRow struct {
+	SpotifySongID sql.NullString `json:"spotify_song_id"`
+	Artist        sql.NullString `json:"artist"`
+	TrackName     sql.NullString `json:"track_name"`
+	Count         int64          `json:"count"`
+}
+
+func (q *Queries) GetTopNListens(ctx context.Context, limit int32) ([]GetTopNListensRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTopNListens, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTopNListensRow
+	for rows.Next() {
+		var i GetTopNListensRow
+		if err := rows.Scan(
+			&i.SpotifySongID,
+			&i.Artist,
+			&i.TrackName,
+			&i.Count,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
