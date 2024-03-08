@@ -125,3 +125,55 @@ func (q *Queries) GetTopNListens(ctx context.Context, limit int32) ([]GetTopNLis
 	}
 	return items, nil
 }
+
+const getTopUniqueMonthlyListens = `-- name: GetTopUniqueMonthlyListens :many
+SELECT listen_id, spotify_song_id, spotify_href, spotify_uri, artist, artist_genres, track_name, album_name, album_image, album_image_height, album_image_width, html, listened_at FROM listen WHERE listened_at BETWEEN (CURDATE() - INTERVAL 1 MONTH ) and CURDATE() ORDER BY listened_at DESC LIMIT ?
+`
+
+func (q *Queries) GetTopUniqueMonthlyListens(ctx context.Context, limit int32) ([]Listen, error) {
+	rows, err := q.db.QueryContext(ctx, getTopUniqueMonthlyListens, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Listen
+	for rows.Next() {
+		var i Listen
+		if err := rows.Scan(
+			&i.ListenID,
+			&i.SpotifySongID,
+			&i.SpotifyHref,
+			&i.SpotifyUri,
+			&i.Artist,
+			&i.ArtistGenres,
+			&i.TrackName,
+			&i.AlbumName,
+			&i.AlbumImage,
+			&i.AlbumImageHeight,
+			&i.AlbumImageWidth,
+			&i.Html,
+			&i.ListenedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUniqueMonthlyListenCount = `-- name: GetUniqueMonthlyListenCount :one
+SELECT COUNT(*) FROM listen WHERE listened_at BETWEEN (CURDATE() - INTERVAL 1 MONTH ) and CURDATE() ORDER BY listened_at DESC
+`
+
+func (q *Queries) GetUniqueMonthlyListenCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getUniqueMonthlyListenCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}

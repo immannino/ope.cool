@@ -10,6 +10,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/immannino/ope.cool/pkg/orm"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -19,7 +20,15 @@ var (
 
 func init() {
 	// setup DB stuff
+	if os.Getenv("ENV") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+
 	log.Println("connecting to DB")
+	log.Println(os.Getenv("DATABASE_URI"))
 	db, err := sql.Open("mysql", os.Getenv("DATABASE_URI"))
 	if err != nil {
 		fmt.Println("Error connecting to DB", err)
@@ -51,6 +60,28 @@ func Mysql(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(top)
+		return
+	} else if r.URL.Query().Get("monthly") != "" {
+		list, err := querier.GetTopUniqueMonthlyListens(r.Context(), 10)
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(list)
+		return
+	} else if r.URL.Query().Get("monthly-count") != "" {
+		count, err := querier.GetUniqueMonthlyListenCount(r.Context())
+		if err != nil {
+			respondError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]int{
+			"Count": int(count),
+		})
 		return
 	} else {
 		log.Println("Fetching single")
