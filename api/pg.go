@@ -1,20 +1,20 @@
 package handler
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/immannino/ope.cool/pkg/orm"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 )
 
 var (
-	db      *sql.DB
+	db      *pgxpool.Pool
 	querier *orm.Queries
 )
 
@@ -29,10 +29,29 @@ func init() {
 
 	log.Println("connecting to DB")
 	log.Println(os.Getenv("DATABASE_URI"))
-	db, err := sql.Open("mysql", os.Getenv("DATABASE_URI"))
+
+	poolConfig, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URI"))
 	if err != nil {
-		fmt.Println("Error connecting to DB", err)
-		panic(err)
+		log.Fatalf("postgres - NewPostgres - pgxpool.ParseConfig: %v", err)
+	}
+
+	poolConfig.MaxConns = int32(3)
+
+	attempts := 5
+	for attempts > 0 {
+		db, err = pgxpool.ConnectConfig(context.Background(), poolConfig)
+		if err == nil {
+			break
+		}
+
+		log.Printf("Postgres is trying to connect, attempts left: %d - %v", attempts, err)
+
+		time.Sleep(time.Second)
+
+		attempts--
+	}
+	if err != nil {
+		log.Fatalf("postgres - NewPostgres - connAttempts == 0: %v", err)
 	}
 
 	log.Println("connecting to Querier")
@@ -61,28 +80,28 @@ func Mysql(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(top)
 		return
-	} else if r.URL.Query().Get("monthly") != "" {
-		list, err := querier.GetTopUniqueMonthlyListens(r.Context(), 10)
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(list)
-		return
-	} else if r.URL.Query().Get("monthly-count") != "" {
-		count, err := querier.GetUniqueMonthlyListenCount(r.Context())
-		if err != nil {
-			respondError(w, err)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]int{
-			"Count": int(count),
-		})
-		return
+		// } else if r.URL.Query().Get("monthly") != "" {
+		// 	list, err := querier.GetTopUniqueMonthlyListens(r.Context(), 10)
+		// 	if err != nil {
+		// 		respondError(w, err)
+		// 		return
+		// 	}
+		// 	w.WriteHeader(http.StatusOK)
+		// 	w.Header().Add("Content-Type", "application/json")
+		// 	json.NewEncoder(w).Encode(list)
+		// 	return
+		// } else if r.URL.Query().Get("monthly-count") != "" {
+		// 	count, err := querier.GetUniqueMonthlyListenCount(r.Context())
+		// 	if err != nil {
+		// 		respondError(w, err)
+		// 		return
+		// 	}
+		// 	w.WriteHeader(http.StatusOK)
+		// 	w.Header().Add("Content-Type", "application/json")
+		// 	json.NewEncoder(w).Encode(map[string]int{
+		// 		"Count": int(count),
+		// 	})
+		// 	return
 	} else {
 		log.Println("Fetching single")
 		resp, err := querier.GetLatestListen(ctx)

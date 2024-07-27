@@ -1,10 +1,11 @@
 version: "2"
 sql:
-  - engine: "mysql"
+  - engine: "postgresql"
     queries: "sql/query.sql"
     schema: "sql/schema.sql"
     gen:
       go:
         package: "orm"
         out: "pkg/orm"
+        sql_package: "pgx/v4"
         emit_json_tags: true
